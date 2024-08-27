@@ -1,9 +1,8 @@
 import os
 import requests
 from requests.auth import HTTPBasicAuth
-import json
 from dateutil.parser import parse as parse_date
-from datetime import datetime
+from datetime import datetime, timezone
 import humanize
 
 # Load the JIRA API base URL and authentication credentials from environment variables
@@ -40,10 +39,11 @@ def get_last_modified_tickets(project_key):
         return []
 
 def format_elapsed_time(updated_time_str):
-    # Parse the updated time string into a datetime object
+    # Parse the updated time string into a timezone-aware datetime object
     updated_time = parse_date(updated_time_str)
+    # Get the current time as a timezone-aware datetime object in UTC
+    now = datetime.now(timezone.utc)
     # Calculate the time difference from now
-    now = datetime.utcnow()
     elapsed_time = now - updated_time
     # Convert the time difference into a human-readable string
     return humanize.naturaltime(elapsed_time)
