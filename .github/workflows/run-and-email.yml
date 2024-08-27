@@ -1,0 +1,54 @@
+name: Run JIRA Script and Email Output
+
+on:
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+  schedule:
+    - cron: '0 9 * * *' # Runs every day at 9 AM UTC
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests python-dateutil humanize
+
+    - name: Run the JIRA script
+      id: run_script
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        JIRA_PROJECTS: ${{ secrets.JIRA_PROJECTS }}
+      run: |
+        python issues.py > output.txt
+
+    - name: Send email with output
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: ${{ secrets.SMTP_SERVER_ADDRESS }}
+        server_port: ${{ secrets.SMTP_SERVER_PORT }}
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "JIRA Script Output"
+        to: ${{ secrets.RECIPIENT_EMAIL }}
+        from: ${{ secrets.EMAIL_USERNAME }}
+        content_type: text/plain
+        body: |
+          Hello,
+
+          Please find attached the output from the latest JIRA script execution.
+
+          Best regards,
+          GitHub Actions
+        attachments: output.txt
