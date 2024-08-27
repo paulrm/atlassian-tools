@@ -38,6 +38,7 @@ jobs:
       with:
         server_address: ${{ secrets.SMTP_SERVER_ADDRESS }}
         server_port: ${{ secrets.SMTP_SERVER_PORT }}
+        ignore_cert: true
         username: ${{ secrets.EMAIL_USERNAME }}
         password: ${{ secrets.EMAIL_PASSWORD }}
         subject: "JIRA Script Output"
