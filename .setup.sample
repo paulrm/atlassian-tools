@@ -1,0 +1,4 @@
+export JIRA_BASE_URL="https://your-jira-instance.atlassian.net"
+export JIRA_USERNAME="your-email@example.com"
+export JIRA_API_TOKEN="your-api-token"
+export JIRA_PROJECTS="PROJ1,PROJ2,PROJ3"
