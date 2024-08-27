@@ -2,6 +2,9 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+from dateutil.parser import parse as parse_date
+from datetime import datetime
+import humanize
 
 # Load the JIRA API base URL and authentication credentials from environment variables
 JIRA_BASE_URL = os.getenv('JIRA_BASE_URL')
@@ -36,6 +39,15 @@ def get_last_modified_tickets(project_key):
         print(f"Failed to retrieve issues for project {project_key}. Status code: {response.status_code}")
         return []
 
+def format_elapsed_time(updated_time_str):
+    # Parse the updated time string into a datetime object
+    updated_time = parse_date(updated_time_str)
+    # Calculate the time difference from now
+    now = datetime.utcnow()
+    elapsed_time = now - updated_time
+    # Convert the time difference into a human-readable string
+    return humanize.naturaltime(elapsed_time)
+
 def main():
     for project_key in JIRA_PROJECTS:
         print(f"\nLast modified tickets for project {project_key}:")
@@ -47,8 +59,9 @@ def main():
         for ticket in tickets:
             key = ticket['key']
             summary = ticket['fields']['summary']
-            updated = ticket['fields']['updated']
-            print(f"{key}: {summary} (Last Updated: {updated})")
+            updated_time_str = ticket['fields']['updated']
+            elapsed_time = format_elapsed_time(updated_time_str)
+            print(f"{key}: {summary} (Last Updated: {elapsed_time})")
 
 if __name__ == "__main__":
     main()
