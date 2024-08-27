@@ -44,7 +44,7 @@ jobs:
         subject: "JIRA Script Output"
         to: ${{ secrets.RECIPIENT_EMAIL }}
         from: ${{ secrets.EMAIL_USERNAME }}
-        content_type: text/plain
+        content_type: body
         body: |
           Hello,
 
